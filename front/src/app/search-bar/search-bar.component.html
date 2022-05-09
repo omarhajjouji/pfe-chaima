@@ -1,0 +1,6 @@
+<div class="container mb-5" >
+    <form class="search-box" #moluculeForm="ngForm" (ngSubmit)="search(moluculeForm.value)" id="search-form">
+        <input type="text" placeholder=" " name="molucule" required ngModel/>
+        <button type="reset"></button>
+    </form>
+</div>

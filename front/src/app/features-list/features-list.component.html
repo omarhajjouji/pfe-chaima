@@ -1,0 +1,5 @@
+<div class="list-type5" *ngIf="features">
+    <ol *ngFor="let item of features | keyvalue">
+        <li *ngIf="item.value!=' '"><p>{{item.key}}</p><a href="#">{{item.value}} </a></li>
+    </ol>
+</div>
