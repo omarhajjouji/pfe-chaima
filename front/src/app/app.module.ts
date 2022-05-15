@@ -7,17 +7,25 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
 import {HttpClientModule} from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { FeaturesListComponent } from './features-list/features-list.component';
+import { LoginComponent } from './login/login.component';
+import { MainComponent } from './main/main.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 @NgModule({
   declarations: [
     AppComponent,
     SearchBarComponent,
-    FeaturesListComponent
+    FeaturesListComponent,
+    LoginComponent,
+    MainComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    NgbModule
 
   ],
   providers: [],

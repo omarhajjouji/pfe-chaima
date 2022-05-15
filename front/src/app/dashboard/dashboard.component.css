@@ -1,0 +1,28 @@
+tbody  td{
+    color:white
+}
+
+thead{
+    color:white
+}
+
+table{
+    background-color:#17a2b8
+
+}
+
+h3 {
+    color:white
+}
+
+.open-model{
+    margin-left: auto;
+    display: block;
+    margin-bottom:20px;
+    background-color:#007bff;
+    color:aliceblue;
+}
+
+.open-model:hover{
+    background-color:#024e9e;
+}

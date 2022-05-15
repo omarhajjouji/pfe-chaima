@@ -1,0 +1,9 @@
+<div class="container mb-5" >
+    
+    <form class="search-box" #LoginForm="ngForm" (ngSubmit)="login(LoginForm.value)">
+        <h1>Login</h1>
+        <input type="text" placeholder="exemple@exemple.com" name="email" required ngModel/>
+        <input type="password" placeholder="********" name="password" required ngModel/>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+</div>
