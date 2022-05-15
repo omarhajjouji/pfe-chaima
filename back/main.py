@@ -1,4 +1,4 @@
-import json
+from http.client import OK
 from os import access
 from flask import Flask, render_template, request, redirect, url_for, session,abort
 
@@ -12,12 +12,14 @@ from selenium.webdriver.common.by import By
 import docx
 from docx import Document
 from docx.shared import Inches
-import csv
-import os
-import requests
+import secrets
+
 import pandas as pd
 from webdriver_manager.chrome import ChromeDriverManager
 from flask_cors import CORS
+from pymongo import MongoClient
+from flask_mail import Mail,Message
+
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")
@@ -165,7 +167,16 @@ def get_page(keyword):
             "molecular_weight":molecular_weight,
             }
 
+def get_database():
+    
+    # Provide the mongodb atlas url to connect python to mongodb using pymongo
+    CONNECTION_STRING = "mongodb://localhost:27017"
 
+    # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
+    client = MongoClient(CONNECTION_STRING)
+
+    # Create the database for our example (we will use the same database throughout the tutorial
+    return client
 
 
 # Intialize Flask
@@ -175,12 +186,75 @@ app.secret_key = '%3&}QWkq+>y7<pqZ'
 
 CORS(app)
 
+
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = 'transportz.project@gmail.com'
+app.config['MAIL_PASSWORD'] = 'yourpassword'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+
+mail = Mail(app)
+
+
+def getUsers():    
+    db = get_database()
+    return db["medis"]["users"]
+
+
+
 @app.route('/get_keys',methods=['GET'])
 def get_features():
     molucule = request.args.get('molucule')
     return get_page(molucule)
 
+@app.route('/login',methods=['POST'])
+def login_user():
+    data = request.get_json(force=True)
+    email =data["email"]
+    password = data["password"]
+    user = list(getUsers().find({ "email": email }))
+    if(len(user)>0):
+        if(password == user[0]["password"]):
+            return ({"email":user[0]["email"],"role":user[0]["role"]},200)
+        else:
+            return ("please verify your password",404)
+    else:
+        return ("No account found with this email",404)
+
+@app.route('/users',methods=['GET','POST','DELETE'])
+def Users():
+    if(request.method=="GET"):
+        try:
+            users = list(getUsers().find({},{"_id": 0, "email": 1, "username": 1,"role":1}))
+            return ({"users":users},200)
+        except:
+            return ("Error getting users",500)
+    elif(request.method=="POST"):
+        try:
+            data = request.get_json(force=True)
+            password = secrets.token_hex(nbytes=10)
+            getUsers().insert_one({"username":data["username"],"email":data["email"],"password":password,"role":"user"})
+
+            msg = Message('Hello from the other side!', sender =   'peter@mailtrap.io', recipients = ['omarhajjouji@gmail.com'])
+            msg.body = "Hey Paul, sending you this email from my Flask app, lmk if it works"
+            mail.send(msg)
+
+            users = list(getUsers().find({},{"_id": 0, "email": 1, "username": 1,"role":1}))
+            return ({"users":users},200)
+        except Exception as e :
+            print(e)
+            return ("Error Creating user",500)
+    elif(request.method=="DELETE"):
+        try:
+            email = request.args.get('email')
+            getUsers().delete_one({"email":email})
+            users = list(getUsers().find({},{"_id": 0, "email": 1, "username": 1,"role":1}))
+            return ({"users":users},200)
+        except:
+            return ("Error Deleting user",500)
 
 
 if __name__ == "__main__":
+
     app.run(host="0.0.0.0")
