@@ -2,5 +2,22 @@
     <form class="search-box" #moluculeForm="ngForm" (ngSubmit)="search(moluculeForm.value)" id="search-form">
         <input type="text" placeholder=" " name="molucule" required ngModel/>
         <button type="reset"></button>
+
+        <p class="text-danger d-none" id="error-message" style="position: absolute;width:400px;margin-top:20px">Sorry we couldn't find results for this term</p>
+
+        
+        <button class="btn btn-xs btn-primary" id="submit">
+             GO <i class="fa fa-arrow-right" aria-hidden="true"></i>
+        </button>
+        <div id="document-actions" class="d-none">
+            <button class="btn btn-xs btn-success d-none" >
+                View <i class="fa fa-arrow-right" aria-hidden="true"></i>
+           </button>
+           <a class="btn btn-xs btn-info mt-3 ml-2" [href]="'http://localhost:5000/static/articles/'+moluculeForm.value.molucule+'.docx'">
+            Download 2.5 module    <i class="fa-solid fa-download"></i>
+           </a>
+        </div>
+
+        
     </form>
 </div>

@@ -1,4 +1,13 @@
-<h3 class="p-3 text-center">Users List</h3>
+<nav class="navbar navbar-light bg-light" style="background-color:#001d2b !important;box-shadow: rgba(0, 0, 0, 0.073) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.062) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;;" >
+  <a  href="/main">
+    <img src="../../assets/images/logo.png" width="50" height="50" class="ml-5" alt="">
+  </a>
+  <div>
+    <a href="/main"><i class="fa-solid fa-search dash-icon" ></i></a>
+    <a style="cursor: pointer;"><i class="fa-solid fa-arrow-right-from-bracket dash-icon mx-2" (click)="logout()"></i></a>
+  </div>
+</nav>
+<h3 class="p-3 mt-4 text-center">Users List</h3>
 <div class="container">
     <ng-template #content let-modal>
         <div class="modal-header">
@@ -14,23 +23,38 @@
             <div class="mb-3">
               <label >Email</label>
               <div class="input-group">
-                <input  class="form-control" placeholder="exemple@exemple.com" name="email" required ngModel></div>
+                <input  class="form-control" placeholder="exemple@medis.com.tn" name="email" required ngModel></div>
             </div>
           </form>
           <div class="modal-footer">
             <button type="submit" class="btn btn-outline-dark" (click)="createUser(createForm.value,modal)">Save</button>
           </div>
         </div>
-
       </ng-template>
+
+      <ng-template #confirm let-modal>
+        <div class="modal-header">
+          <h4 class="modal-title" id="modal-title">User deletion</h4>
+          <button type="button" class="btn-close" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Are you sure you want to delete <span class="text-primary">"{{to_delete}}"</span> Account ?</strong></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+          <button type="button" class="btn btn-danger" (click)="modal.close('Ok click')">Yes</button>
+        </div>
+      </ng-template>
+
       
-      <button class="btn btn-lg btn-outline-primary open-model" (click)="open(content)">ADD USER</button>
+      <button class="btn btn-lg btn-outline-primary open-model" (click)="open(content)">ADD USER <i class="fa-solid fa-user-plus"></i></button>
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
                 <th>Username</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th></th>
             </tr>
         </thead>
         <tbody *ngIf="users">
@@ -38,7 +62,7 @@
                 <td>{{user?.username}}</td>
                 <td>{{user?.email}}</td>
                 <td>{{user?.role}}</td>
-                <td><button class="btn btn-danger" (click)="deleteUser(user?.email)">Delete</button></td>
+                <td><button class="btn btn-danger d-block mx-auto" (click)="confirmModel(confirm,user)">Delete</button></td>
             </tr>
         </tbody>
     </table>

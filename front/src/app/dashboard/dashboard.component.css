@@ -7,7 +7,7 @@ thead{
 }
 
 table{
-    background-color:#17a2b8
+    background-color:#001d2b
 
 }
 
@@ -25,4 +25,12 @@ h3 {
 
 .open-model:hover{
     background-color:#024e9e;
+}
+
+.dash-icon::before{
+    top: 10px;
+    right:20px;
+    font-size:30px;
+    color:#079be3;
+    margin-right: 40px;
 }

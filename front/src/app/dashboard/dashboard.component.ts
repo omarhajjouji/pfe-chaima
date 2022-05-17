@@ -11,11 +11,24 @@ export class DashboardComponent implements OnInit {
 
   closeResult = '';
   users :any;
+  to_delete: any;
   constructor(private modalService: NgbModal,private userService:UsersService ) {}
 
   open(content:any) {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
+    }, (reason) => {
+      this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+    });
+  }
+
+
+
+  confirmModel(confirm_model:any,user:any) {
+    this.to_delete = user.username;
+    this.modalService.open(confirm_model, {ariaLabelledBy: 'modal-title'}).result.then((result) => {
+      this.deleteUser(user.email);
+      
     }, (reason) => {
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
     });
@@ -50,6 +63,10 @@ export class DashboardComponent implements OnInit {
     this.userService.deleteUser(email).subscribe((res)=>{
       this.users = res.users
     })
+  }
+
+  logout(){
+    this.userService.logout();
   }
 
 }

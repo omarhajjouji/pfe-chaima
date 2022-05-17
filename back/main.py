@@ -13,7 +13,7 @@ import docx
 from docx import Document
 from docx.shared import Inches
 import secrets
-
+import requests
 import pandas as pd
 from webdriver_manager.chrome import ChromeDriverManager
 from flask_cors import CORS
@@ -148,6 +148,54 @@ def get_page(keyword):
         molecular_weight=molecular_weight_find.text
     except NoSuchElementException:
         molecular_weight=" "
+    try:
+        chemical_tructure=driver.find_element_by_xpath("//*[@id='2D-Structure']/div[2]/div[1]/div/div[2]/table/tr/td/div/div[1]/div/div/img").get_attribute("src")
+        chemical_tructure
+    except NoSuchElementException:
+        molecular_weight=" "
+    
+    with open("static/images/"+str(search_key_word)+'.jpg', 'wb') as handle:
+
+        response = requests.get(chemical_tructure, stream=True)
+
+        if not response.ok:
+            print(response)
+
+        for block in response.iter_content(1024):
+            if not block:
+                break
+
+            handle.write(block)
+
+    doc = docx.Document()
+    head=doc.add_heading('2.5.1 Product Devlopment Rationale')
+    drug_name=keyword
+    doc_para = doc.add_paragraph('Under the Anatomical Therapeutic Chemical (ATC) classification system'+drug_name+' are classified under the following headings  (« WHOCC - ATC/DDD Index » s. d.): ' )
+    doc.add_paragraph(list_atc_codes)
+    doc_para = doc.add_paragraph('In the following sub-modules, an integrated and critical assessment on pharmacodynamics, pharmacokinetics, efficacy and safety is presented in order to support Marketing Authorisation application for '+drug_name+'under the legal status of a Generic medicinal product, according to Article 10 (1) of the Directive 2001/83/EC, as last amended.' )
+    doc_para= doc.add_paragraph('The clinical documentation has been obtained using standard text and reference books as well as computer-based searches of the scientific literature.')
+    doc.add_heading('2.5.2 Overview of Biopharmaceutics')
+    doc.add_paragraph('The chemical name of '+ search_key_word + ' is '+iupac+' (PubChem s.d.).')
+    doc_para=doc.add_paragraph(drug_name+'has the following experimental properties (PubChem s. d.) :')
+    doc.add_paragraph('physical description : '+phy_desc+'.'+"\n"+phy_desc_review)
+    #write review
+    doc.add_paragraph('solubility : '+solubility_1+"\n"+solubility_1_review)
+    doc.add_paragraph('Melting point : '+melting_point)
+    doc.add_paragraph('Optical rotation : '+optical_rotation+"\n"+optical_rotation_review)
+    doc.add_paragraph('Decomposition : '+decomposition+"\n"+decomposition_review)
+    doc_para=doc.add_paragraph('Stability/Shelf life : ')
+    doc.add_paragraph(shelf_life+"\n"+shelf_life_review)
+    doc.add_paragraph(stability)
+    doc_para=doc.add_paragraph('The table below (Table 1) summarises chemical information on (PubChem s. d.).')
+    doc_para=doc.add_paragraph('Table 1: chemical information')
+    doc_para.alignment =1
+    doc_para=doc.add_paragraph('____________________________________________________________________________________________________')
+    doc.add_picture("static/images/"+rf"{search_key_word}.jpg")
+    doc_para=doc.add_paragraph('____________________________________________________________________________________________________')
+    doc.add_paragraph('Molecular formula : '+molecular_formula)
+    doc.add_paragraph('Molecular weight : '+molecular_weight)
+    doc.add_paragraph('CAS Registry Number : '+CAS_number)
+    doc.save("static/articles/"+search_key_word +".docx")
 
     return {"ATC-Code":list_atc_codes,
             "iupac":iupac,"phy_desc":phy_desc,
@@ -189,7 +237,7 @@ CORS(app)
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 'transportz.project@gmail.com'
+app.config['MAIL_USERNAME'] = 'medissearch@gmail.com'
 app.config['MAIL_PASSWORD'] = 'yourpassword'
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
@@ -216,9 +264,9 @@ def login_user():
     user = list(getUsers().find({ "email": email }))
     if(len(user)>0):
         if(password == user[0]["password"]):
-            return ({"email":user[0]["email"],"role":user[0]["role"]},200)
+            return ({"email":user[0]["email"],"role":user[0]["role"],"username":user[0]["username"]},200)
         else:
-            return ("please verify your password",404)
+            return ("Please verify your password",404)
     else:
         return ("No account found with this email",404)
 
@@ -236,8 +284,8 @@ def Users():
             password = secrets.token_hex(nbytes=10)
             getUsers().insert_one({"username":data["username"],"email":data["email"],"password":password,"role":"user"})
 
-            msg = Message('Hello from the other side!', sender =   'peter@mailtrap.io', recipients = ['omarhajjouji@gmail.com'])
-            msg.body = "Hey Paul, sending you this email from my Flask app, lmk if it works"
+            msg = Message('Your credentials at MediSearch tool', sender =   'admin@medis.tn', recipients = [data["email"]])
+            msg.body = "Hello you are now registred at MediSearch tool and you can login using your e-mail and the following password : "+password 
             mail.send(msg)
 
             users = list(getUsers().find({},{"_id": 0, "email": 1, "username": 1,"role":1}))

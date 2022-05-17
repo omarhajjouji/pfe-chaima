@@ -1,4 +1,13 @@
-<a href="/dashboard"><i class="fa-solid fa-table-columns dash-icon" ></i></a>
+<nav class="navbar navbar-light bg-light" style="background-color:#001d2b !important;box-shadow: rgba(0, 0, 0, 0.073) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.062) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;;" >
+    <a  href="/main">
+      <img src="../../assets/images/logo.png" width="50" height="50" class="ml-5" alt="">
+    </a>
+    <div>
+        <a *ngIf="isAdmin" href="/dashboard"><i class="fa-solid fa-table-columns dash-icon" ></i></a>
+        <a style="cursor: pointer;"><i class="fa-solid fa-arrow-right-from-bracket dash-icon mx-2" (click)="logout()"></i></a>
+    </div>
+</nav>
+
 <app-search-bar (searchSubmitted)="get_features($event)"></app-search-bar>
-<app-features-list [features]="features"></app-features-list>
+<app-features-list [features]="features" class="mt-2" id="features-list"></app-features-list>
 <span class="loader" id="loader"></span>

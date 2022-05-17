@@ -2,8 +2,11 @@
     
     <form class="search-box" #LoginForm="ngForm" (ngSubmit)="login(LoginForm.value)">
         <h1>Login</h1>
-        <input type="text" placeholder="exemple@exemple.com" name="email" required ngModel/>
+        <input type="text" placeholder="exemple@medis.com.tn" name="email" required ngModel/>
         <input type="password" placeholder="********" name="password" required ngModel/>
+        <p class="text-danger text-center">{{error_message}}</p>
         <button type="submit" class="btn btn-primary">Login</button>
+        
     </form>
+    
 </div>
